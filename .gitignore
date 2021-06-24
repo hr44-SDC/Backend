@@ -1,3 +1,8 @@
-
-#dependency_dir
+# dependencies
 node_modules/
+
+# config
+config.json
+
+# data
+data/
