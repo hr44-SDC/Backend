@@ -1,28 +1,20 @@
-const { Pool, Client } = require('pg')
+var mysql = require('mysql')
 
-const pool = new Pool({
-  user: '',
+var connection = mysql.createConnection({
   host: 'localhost',
-  database: 'atelier-raw',
-  password: '',
-  port: 5432,
+  user: 'root',
+  password: 'Rickjames20!',
+  database: 'REVIEWS'
 })
 
-pool.query('SELECT NOW()', (err, res) => {
-  console.log(err, res)
-  pool.end()
+connection.connect()
+
+connection.query('SHOW TABLES;', (err, results) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log(results);
+  }
 })
 
-const client = new Client({
-  user: 'dbuser',
-  host: 'database.server.com',
-  database: 'mydb',
-  password: 'secretpassword',
-  port: 3211,
-})
-client.connect()
-
-client.query('SELECT NOW()', (err, res) => {
-  console.log(err, res)
-  client.end()
-})
+connection.end()
