@@ -1,9 +1,10 @@
-var mysql = require('mysql')
+var mysql = require('mysql');
+let pwd = require('./pwd.js');
 
 var connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'Rickjames20!',
+  password: pwd,
   database: 'REVIEWS'
 })
 
@@ -16,5 +17,3 @@ connection.query('SHOW TABLES;', (err, results) => {
     console.log(results);
   }
 })
-
-connection.end()
