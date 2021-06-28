@@ -1,4 +1,5 @@
 const { Pool, Client} = require('pg')
+
 const config = require('../config.json')
 
 
@@ -14,6 +15,7 @@ const conString = `postgres://${user}:${pw}@${host}:${port}/${db}`
 const client = new Client({
   connectionString: conString,
 })
+
 client.connect((err) => {
   if (err) {
     console.log('unsuccessful connection to database')
@@ -21,5 +23,7 @@ client.connect((err) => {
     console.log('successfully connected to database!')
   }
 })
+
+
 
 module.exports = client;
