@@ -48,9 +48,15 @@ var controllers1 = {
   submitQuestion: (req, response) => {
     //path: /qa/questions
     var { body, name, email, product_id } = req.body
-    var queryStr = `INSERT INTO questions (product_id, question_body, question_date, asker_name, question_helpfulness, question_reported) VALUES (${product_id}, '${body}', ${date.getTime()}, ${name}, 0, 0)`
-
-
+    var queryStr = `INSERT INTO questions (question_id, product_id, question_body, question_date, asker_name, asker_email, question_helpfulness, question_reported) VALUES (nextval('question_id_sequence'), ${product_id}, '${body}', ${new Date().getTime()}, '${name}', '${email}', 0, 0)`
+    // console.log(queryStr)
+    client.query(queryStr, (err, res) => {
+      if (err) {
+        response.status(400).send(err)
+      } else {
+        response.status(200).send(`question added to db`)
+      }
+    })
   },
   submitAnswer: (req, response) => {
     //path: /qa/questions/:question_id/answers

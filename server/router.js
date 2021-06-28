@@ -6,4 +6,8 @@ router
   .route('/qa/questions/:product_id')
   .get(controllers1.getQuestions)
 
+router
+  .route('/qa/questions')
+  .post(controllers1.submitQuestion)
+
 module.exports = router;
