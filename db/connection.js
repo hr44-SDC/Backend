@@ -5,7 +5,7 @@ var connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: pwd,
-  database: 'REVIEWS'
+  database: 'ratings_and_reviews'
 })
 
 connection.connect()
@@ -17,3 +17,5 @@ connection.query('SHOW TABLES;', (err, results) => {
     console.log(results);
   }
 })
+
+module.exports = connection;
