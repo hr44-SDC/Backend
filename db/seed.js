@@ -23,3 +23,8 @@
 
 // stream.pipe(csvStream);
 
+
+
+
+
+-- run command: mysql --local-infile=1 -u root -p < seed.sql
