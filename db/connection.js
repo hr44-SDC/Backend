@@ -1,10 +1,8 @@
 var mysql = require('mysql');
-let pwd = require('./pwd.js');
 
 var connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: pwd,
   database: 'ratings_and_reviews'
 })
 

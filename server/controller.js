@@ -6,8 +6,9 @@ var queryStrin = 'SELECT reviews.*, group_concat(review_photos.photo_url) FROM r
 let controller = {
   getReview: (req, res) => {
     // var queryString = `SELECT * FROM reviews INNER JOIN reviews_photos ON reviews.id = reviews_photos.review_id WHERE product_id = ${req.params.id}`;
-    var queryString = `SELECT * FROM reviews WHERE product_id = ${req.params.id}`;
-    db.query(queryStrin, (err, results) => {
+    // var queryString = `SELECT * FROM reviews WHERE product_id = ${req.params.id}`;
+    var queryString = 'SELECT reviews.id, array_agg(reviews_photos.photo_url) FROM reviews INNER JOIN reviews_photos ON reviews.id = reviews_photos.review_id WHERE reviews.product_id = 5 GROUP BY reviews.id;'
+    db.query(queryString, (err, results) => {
       if (err) {
         console.log(err);
         res.status(400).send(err);
