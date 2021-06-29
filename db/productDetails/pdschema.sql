@@ -16,54 +16,48 @@ CREATE TABLE IF NOT EXISTS products (
 
 CREATE TABLE IF NOT EXISTS features (
   id SERIAL PRIMARY KEY,
+  productId INT NOT NULL,
   feature VARCHAR (50),
   featureValue VARCHAR (100),
-  productId INT UNIQUE NOT NULL,
   FOREIGN KEY (productId)
     REFERENCES products (productId)
 );
 
-CREATE TABLE IF NOT EXISTS styleAndPrice (
+CREATE TABLE IF NOT  EXISTS styleAndPrice (
   id SERIAL PRIMARY KEY,
   styleId INT UNIQUE NOT NULL,
+  productId INT NOT NULL,
   styleName VARCHAR(50),
+  salePrice VARCHAR(10),
   originalPrice INT,
-  salePrice INT,
-  defaultStyle BOOLEAN NOT NULL,
-  productId INT UNIQUE NOT NULL,
+  defaultStyle INT,
   FOREIGN KEY (productId)
     REFERENCES products (productId)
 );
 
 CREATE TABLE IF NOT EXISTS images (
   id SERIAL PRIMARY KEY,
+  styleId INT UNIQUE NOT NULL,
   mainUrl VARCHAR (200),
   thumbnailUrl VARCHAR (200),
-  styleId INT UNIQUE NOT NULL,
-  productId INT UNIQUE NOT NULL,
   FOREIGN KEY (styleId)
-    REFERENCES styleAndPrice (styleId),
-  FOREIGN KEY (productId)
-    REFERENCES products (productId)
+    REFERENCES styleAndPrice (styleId)
 );
 
 CREATE TABLE IF NOT EXISTS sizeAndQuantity (
   id SERIAL PRIMARY KEY,
-  quantity INT,
+  styleId INT NOT NULL,
   size VARCHAR(15),
-  productId INT UNIQUE NOT NULL,
-  styleId INT UNIQUE NOT NULL,
+  quantity INT,
   FOREIGN KEY (styleId)
-    REFERENCES styleAndPrice (styleId),
-  FOREIGN KEY (productId)
-    REFERENCES products (productId)
+    REFERENCES styleAndPrice (styleId)
 );
 
 CREATE TABLE IF NOT EXISTS cart (
   id SERIAL PRIMARY KEY,
   userSession INT NOT NULL,
-  active BOOLEAN NOT NULL,
-  productId INT UNIQUE NOT NULL,
+  productId INT NOT NULL,
+  active INT,
   FOREIGN KEY (productId)
     REFERENCES products (productId)
 )

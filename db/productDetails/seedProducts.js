@@ -2,11 +2,13 @@ const fs = require('fs');
 const Pool = require('pg').Pool;
 const fastcsv = require('fast-csv');
 
-let stream = fs.createReadStream('./data/product.csv');
+//create reading stream using fs.createReadStream(). This creates an object that will 'pipe' a CSV parser stream object generated from the fast-csv.parse method
+let stream = fs.createReadStream('../data/product.csv');
 let csvData = [];
 let csvStream = fastcsv
   .parse()
   .on('data', function(data) {
+    // triggered when a record is parsed
     csvData.push(data);
   })
   .on('end', function() {
