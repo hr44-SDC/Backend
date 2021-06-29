@@ -58,21 +58,46 @@ var controllers1 = {
       }
     })
   },
-  submitAnswer: (req, response) => {
+  submitAnswer: async (req, response) => {
     //path: /qa/questions/:question_id/answers
-    var { body, name, email, product_id } = req.body
-
+    try {
+      var { body, name, email, photos } = req.body
+      var id = req.params.question_id
+      var answerQueryStr = `INSERT INTO answers (answer_id, question_id, answer_body, answer_date, answerer_name, answerer_email, answer_reported, answer_helpfulness)
+      VALUES (nextval('answer_id_sequence'), ${id}, '${body}', ${new Date().getTime()}, '${name}', '${email}', 0, 0) RETURNING answer_id`
+      var queryReturn = await client.query(answerQueryStr);
+      var newAnswerId = queryReturn.rows[0].answer_id;
+      if (photos.length > 0) {
+        for (var i = 0; i < photos.length; i++) {
+          var photoQueryStr = `INSERT INTO  photos (id, answer_id, url) VALUES (nextval('photo_id_sequence'), ${newAnswerId}, '${photos[i]}') RETURNING *`
+          var otherQueryReturn = await client.query(photoQueryStr)
+        }
+      }
+      response.status(200).send('answer and associated photos have been added to the database')
+    }
+    catch (err) {
+      response.status(400).send(err)
+    }
   },
-  udpateQuestionHelpfulness: (req, response) => {
+  updateHelpfulness: (req, response) => {
     //path: /qa/questions/:question_id/helpful
-    var { body, name, email, product_id } = req.body
-
-  },
-  udpateAnswerHelpfulness: (req, response) => {
     //path: /qa/answers/:answer_id/helpful
-    var { body, name, email, product_id } = req.body
+    var helpfulness = req.body.questionHelpfulness || req.body.answerHelpfulness;
+    console.log(helpfulness)
+    var id = req.params.id_to_update
+    var category = req.params.category
+    var shortenedCategory = category.slice(0, category.length-1)
+    var queryStr = `UPDATE ${category} SET ${shortenedCategory}_helpfulness = ${helpfulness} WHERE ${shortenedCategory}_id = ${id};`;
+    console.log(queryStr)
+    client.query(queryStr, (err, res) => {
+      if (err) {
+        response.status(400).send(err)
+      } else {
+        response.status(201).send(`${category} w/ id ${id} has an updated helpfulness of ${helpfulness}`)
+      }
+    })
+  }
 
-  },
 }
 
 module.exports = controllers1
