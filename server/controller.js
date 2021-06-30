@@ -9,6 +9,7 @@ let controller = {
         console.log(err);
         res.status(400).send(err);
       } else {
+        console.log(results);
         for (var i = 0; i < results.length; i++) {
           if (results[i]['recommended'] === 'true') {
             results[i]['recommended'] = true;
@@ -25,7 +26,7 @@ let controller = {
           }
 
           if (results[i]['response'] === 'null') {
-            results[i]['response'] = '';
+            results[i]['response'] = null;
           }
 
           if (results[i]['photos'] !== null) {
@@ -96,9 +97,84 @@ let controller = {
       }
     })
   },
-  postReview = (req, res) => {
-
+  postReview: (req, res) => {
+    var date = Date.now();
+    console.log('DATE: ', date);
+    var queryString = `INSERT INTO reviews
+    (product_id, rating, date, summary, body, recommended, reported, reviewer_name, reviewer_email, response, helpfulness)
+    VALUES (${req.body.product_id}, "${req.body.rating}", ${date}, "${req.body.summary}", "${req.body.body}", "${req.body.recommend}", "false",
+    "${req.body.name}", "${req.body.email}", "null", 0); SELECT LAST_INSERT_ID();`
+    console.log('queryString: ', queryString);
+    db.query(queryString, (err, results) => {
+      if (err) {
+        console.log(err);
+        res.status(404).send(err);
+      } else {
+        console.log(results);
+        res.status(200).send(results)
+      }
+    })
   }
 }
 
 module.exports = controller;
+
+
+
+
+/*
+
+EXAMPLE OF JSON OBJECT TO USE IN POSTMAN:
+
+{
+    "product_id": 1,
+    "rating": 5,
+    "summary": "Writing product sumamry text",
+    "body": "Writing body sumamry text. Writing body sumamry text. Writing body sumamry text. Writing body sumamry text. Writing body sumamry text. Writing body sumamry text. Writing body sumamry text. Writing body sumamry text.",
+    "recommend": false,
+    "name": "Dorcas45",
+    "email": "Aurelio_Rice27@hotmail.com",
+    "response": "",
+    "photos": [
+        "https://images.unsplash.com/photo-1474494819794-90f9664b530d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1652&q=80"
+    ],
+    "characteristics": {
+        "1": 2,
+        "2": 4,
+        "3": 5,
+        "4": 4
+    }
+}
+
+
+GUIDE ON INSERT STATEMENTS
+How to get an output from a mysql insert?
+Asked 6 years, 5 months ago
+Active 6 years, 5 months ago
+Viewed 359 times
+
+0
+
+
+Our API can concurrently get hundreds of hits at a single endpoint at any given time and each call inserts something into the database.
+
+I need to get the last inserted ID - without using last_inserted_id()
+
+Unfortunately, if we have a lot of traffic all at once, this can sometimes get a bit screwy and give the ID of something being inserted by another hit to the API.
+
+Is there a way to add some kind of output clause that'll return the ID of what was just inserted in the same query as the insert?
+
+mysql
+Share
+Improve this question
+Follow
+asked Jan 15 '15 at 19:08
+
+Chris R.
+68966 silver badges2323 bronze badges
+1
+Why can't you use last_insert_id? Do tell ... – The Blue Dog Jan 15 '15 at 19:11
+With so much traffic coming through at once (doesn't happen all that often) we'll have multiple things being inserted at the same time. That ends up causing last_insert_id to not always match up if things get inserted at the same time through different processes. – Chris R. Jan 15 '15 at 19:32
+1
+Rubbish. last_insert_id is per client, it will always match that client's last insert operation. From the documentation, "The value of mysql_insert_id() is affected only by statements issued within the current client connection. It is not affected by statements issued by other clients." – The Blue Dog Jan 15 '15 at 19:38
+*/

@@ -8,5 +8,8 @@ Router
 Router
   .route('/ratings/:id')
     .get(controller.getRatings)
+Router
+  .route('/newReview')
+    .post(controller.postReview)
 
 module.exports = Router;

@@ -79,3 +79,5 @@ CREATE INDEX characteristics_product_id on characteristics(product_id);
 -- CREATE TABLE ratings_characteristics (
 
 -- )
+
+-- run command: mysql --local-infile=1 -u root -p < seed.sql

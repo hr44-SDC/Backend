@@ -3,7 +3,8 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  database: 'ratings_and_reviews'
+  database: 'ratings_and_reviews',
+  multipleStatements: true
 })
 
 connection.connect()
