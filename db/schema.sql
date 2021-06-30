@@ -49,6 +49,8 @@ LOAD DATA LOCAL INFILE '/Users/scott/Desktop/Hack Reactor/Backend/db/characteris
 
 CREATE INDEX reviews_product_id on reviews(product_id);
 CREATE INDEX reviews_photos_review_id on reviews_photos(review_id);
+CREATE INDEX characteristics_reviews_review_id on characteristics_reviews(review_id);
+CREATE INDEX characteristics_product_id on characteristics(product_id);
 
 
 
