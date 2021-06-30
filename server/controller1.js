@@ -21,9 +21,10 @@ var controllers1 = {
         questionObj["question_helpfulness"] = qdata[i].question_helpfulness;
         questionObj["reported"] = qdata[i].question_reported;
         questionObj["answers"] = {};
-        var answersQuery = `SELECT answer_id, answer_body, answer_date, answerer_name, answer_reported, answer_helpfulness FROM answers WHERE question_id = ${qdata[i].question_id}`
+        var answersQuery = `SELECT answer_id, answer_body, answer_date, answerer_name, answer_reported, answer_helpfulness FROM answers WHERE question_id = ${qdata[i].question_id} AND answer_reported = 0`
         var resAnswer = await client.query(answersQuery)
         var aData = resAnswer.rows;
+        // populate all answers that have not been reported
         for (var j = 0; j < aData.length; j++) {
           questionObj["answers"][aData[j]["answer_id"]] = {}
           questionObj["answers"][aData[j]["answer_id"]]["id"] = aData[j].answer_id;
@@ -31,13 +32,37 @@ var controllers1 = {
           questionObj["answers"][aData[j]["answer_id"]]["date"] = new Date(parseInt(aData[j].answer_date));
           questionObj["answers"][aData[j]["answer_id"]]["answerer_name"] = aData[j].answerer_name;
           questionObj["answers"][aData[j]["answer_id"]]["helpfulness"] = aData[j].answer_helpfulness;
-          // run photos query and push results into above array
+          // run photos query and push results the current answer's photo array
           var photosQuery = `SELECT id, url FROM photos WHERE answer_id = ${aData[j].answer_id}`
           var resPhoto = await client.query(photosQuery)
           var pData = resPhoto.rows
           questionObj["answers"][aData[j]["answer_id"]]["photos"] = pData
         }
         results.results.push(questionObj)
+      }
+      response.status(200).send(results)
+    }
+    catch (err) {
+      response.status(400).send(err)
+    }
+  },
+  getAnswers: async (req, response) => {
+    try {
+      var id = req.params.question_id;
+      var answersQuery = `SELECT answer_id, answer_body, answer_date, answerer_name, answer_helpfulness FROM answers WHERE question_id = ${id} AND answer_reported = 0`;
+      var answersQueryResults = await client.query(answersQuery);
+      var aData = answersQueryResults.rows;
+      for (var i = 0; i < aData.length; i++) {
+        var photosQuery = `SELECT id, url FROM photos WHERE answer_id = ${aData[i].answer_id}`;
+        var resPhoto = await client.query(photosQuery);
+        var pData = resPhoto.rows;
+        aData[i]["photos"] = pData;
+      }
+      var results = {
+        question: id,
+        page: 1,
+        count: 5,
+        results: aData
       }
       response.status(200).send(results)
     }
@@ -80,25 +105,44 @@ var controllers1 = {
     }
   },
   updateHelpfulness: (req, response) => {
-    //path: /qa/questions/:question_id/helpful
-    //path: /qa/answers/:answer_id/helpful
     var helpfulness = req.body.questionHelpfulness || req.body.answerHelpfulness;
     console.log(helpfulness)
     var id = req.params.id_to_update
     var category = req.params.category
-    var shortenedCategory = category.slice(0, category.length-1)
+    var shortenedCategory = category.slice(0, category.length - 1)
     var queryStr = `UPDATE ${category} SET ${shortenedCategory}_helpfulness = ${helpfulness} WHERE ${shortenedCategory}_id = ${id};`;
     console.log(queryStr)
     client.query(queryStr, (err, res) => {
       if (err) {
         response.status(400).send(err)
       } else {
-        response.status(201).send(`${category} w/ id ${id} has an updated helpfulness of ${helpfulness}`)
+        response.status(204).send(`${category} w/ id ${id} has an updated helpfulness of ${helpfulness}`)
       }
     })
-  }
+  },
+  report: (req, response) => {
+    console.log(req.body.reported)
+    console.log(typeof req.body.reported)
+    var reported = (req.body.reported) ? 1 : 0;
+    var id = req.params.id_to_report
+    var category = req.params.category
+    var shortenedCategory = category.slice(0, category.length - 1)
+    var queryStr = `UPDATE ${category} SET ${shortenedCategory}_reported = ${reported} WHERE ${shortenedCategory}_id = ${id};`;
+    console.log(queryStr)
+    client.query(queryStr, (err, res) => {
+      if (err) {
+        response.status(400).send(err)
+      } else {
+        response.status(204).send(`${category} w/ id ${id} has been reported`)
+      }
+    })
+  },
 
 }
+
+/* large join statement
+var queryStr = `Select q.question_id, q.question_body, q.question_date, q.asker_name, q.question_helpfulness, a.answer_id, a.answer_body, a.answerer_name, a.answerer_email, a.answer_reported, a.answer_helpfulness, p.answer_id, p.url FROM questions AS q LEFT JOIN answers AS a ON q.question_id = a.question_id LEFT JOIN photos AS p ON a.answer_id = p.answer_id AND q.question_reported = 0 AND a.answer_reported = 0 WHERE q.product_id = 1`
+*/
 
 module.exports = controllers1
 

@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const controllers = require('./controller.js');
 const controllers1 = require('./controller1.js');
 
 router
@@ -12,11 +11,16 @@ router
 
 router
   .route('/qa/questions/:question_id/answers')
+    .get(controllers1.getAnswers)
     .post(controllers1.submitAnswer)
 
 router
   .route('/qa/:category/:id_to_update/helpful')
     .put(controllers1.updateHelpfulness)
+
+router
+  .route('/qa/:category/:id_to_report/report')
+    .put(controllers1.report)
 
 
 
