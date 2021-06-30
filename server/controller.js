@@ -52,15 +52,11 @@ let controller = {
           } else {
             console.log('resultsTwo :', resultsTwo);
             var resultsFormatted = {product_id: req.params.id, ratings: {}, recommended: {}, characteristics: {}}
-            for (var i = 0; i < resultsTwo.length; i++) {
-              var characteristicName = resultsTwo[i].name;
-              var characteristicId = resultsTwo[i].id
-              resultsFormatted.characteristics[characteristicName] = {id: characteristicId, value: null}
-            }
-
+            var characteristicsJoined = {}
             for (var i = 0; i < results.length; i++) {
               let recommended = results[i].recommended;
               let rating = results[i].rating;
+              console.log(results[i]);
               let characteristicIds = results[i].characteristic_id.split(',')
               let characteristicValues = results[i].characteristic_values.split(',')
 
@@ -76,19 +72,33 @@ let controller = {
               } else {
                 resultsFormatted.recommended[recommended]++;
               }
-              // for (var j = 0; j < characteristicIds.length; j++) {
-              //   resultsFormatted.characteristics['id'] = characteristicIds[j];
-              //   resultsFormatted.characteristics['value'] = characteristicValues[j];
-              // }
+              for (var j = 0; j < characteristicIds.length; j++) {
+                if (characteristicsJoined[characteristicIds[j]] === undefined) {
+                  characteristicsJoined[characteristicIds[j]] = characteristicValues[j];
+                } else {
+                  characteristicsJoined[characteristicIds[j]] += ' ' + characteristicValues[j];
+                }
+              }
+            }
+            console.log(results);
+            console.log(characteristicsJoined);
+
+            for (var i = 0; i < resultsTwo.length; i++) {
+              var characteristicName = resultsTwo[i].name;
+              var characteristicId = resultsTwo[i].id
+              var averageValue = characteristicsJoined[characteristicId].split(' ').reduce((a, b) => Number(a) + Number(b))/characteristicsJoined[characteristicId].length;
+              console.log(averageValue);
+              resultsFormatted.characteristics[characteristicName] = {id: characteristicId, value: averageValue}
             }
             res.status(200).send(resultsFormatted);
           }
         })
       }
     })
+  },
+  postReview = (req, res) => {
+
   }
-  // post review (NEED TO ADD REVIEW AND ALSO UPDATE TABLE)
-  // change helpfulness
 }
 
 module.exports = controller;
