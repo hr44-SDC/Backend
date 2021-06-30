@@ -68,9 +68,11 @@ const productQueries = {
       } else {
         let stylesArray = styleRes.rows;
         let stylesResults = [];
-        let skus = {};
+        let photosArray = [];
+        let skusObjects = {};
 
         for (let i = 0; i < stylesArray.length; i++) {
+          let styleId = stylesArray[i].styleid;
           let defaultstyle = false;
           if (stylesArray[i].defaultstyle === 1) {
             defaultstyle = true;
@@ -82,10 +84,37 @@ const productQueries = {
             original_price: stylesArray[i].originalprice,
             sale_price: stylesArray[i].saleprice,
             [defaultkey]: defaultstyle,
-            skus: skus
+            photos: photosArray,
+            skus: skusObjects
           }
+
+          let sizeQueryStr = `SELECT * FROM sizeAndQuantity WHERE styleId = ${styleId}`;
+          let sizeRes = await connection.query(sizeQueryStr);
+          for (let j = 0; j < sizeRes.rows.length; j++) {
+            let uniqueId = sizeRes.rows[j].id;
+            skusObjects[uniqueId] = {
+                quantity: sizeRes.rows[j].quantity,
+                size: sizeRes.rows[j].size
+              }
+            }
+
+          let photoQueryStr = `SELECT * FROM images WHERE styleID = ${styleId}`;
+          let photoRes = await connection.query(photoQueryStr);
+          console.log(photoRes);
+          for (let k = 0; k < photoRes.rows.length; k++) {
+            let photoObject = {
+              thumbnail_url: photoRes.rows[k].thumbnailurl,
+              url: photoRes.rows[k].mainurl
+            }
+            photosArray.push(photoObject)
+          }
+
           stylesResults.push(newStyle);
-        }
+          skusObjects = {};
+          photosArray = [];
+          }
+
+
         let productResult = {
           product_id: stylesArray[0].productid,
           results: stylesResults
@@ -95,55 +124,6 @@ const productQueries = {
     } catch (err) {
       console.log(err)
     }
-
-    // try and catch block
-    // await connection.query(queryStr, (err, results) => {
-    //   if (err) {
-    //     res.status(404).send(err);
-    //   } else {
-    //     console.log('results:', results);
-    //     let stylesArray = results.rows;
-    //     let stylesResults = [];
-    //     let skus = {};
-
-    //     for (let i = 0; i < stylesArray.length; i++) {
-    //       let defaultstyle = false;
-    //       if (stylesArray[i].defaultstyle === 1) {
-    //         defaultstyle = true;
-    //       }
-    //       let defaultkey = 'default?'
-    //       let newStyle = {
-    //         style_id: stylesArray[i].styleid,
-    //         name: stylesArray[i].stylename,
-    //         original_price: stylesArray[i].originalprice,
-    //         sale_price: stylesArray[i].saleprice,
-    //         [defaultkey]: defaultstyle,
-    //         skus: skus
-    //       }
-    //       stylesResults.push(newStyle);
-
-    //       let queryStr2 = `SELECT * FROM sizeAndQuantity WHERE styleId = ${stylesArray[i].styleid}`;
-    //       connection.query(queryStr2, (err, results2) => {
-    //         if (err) {
-    //           res.status(404).send(err);
-    //         } else {
-    //           for (let j = 0; j < results2.rows.length; j++) {
-    //             let uniqueId = results2.rows[i].id;
-    //             skus[uniqueId] = {
-    //               quantity: results2.rows[i].quantity,
-    //               size: results2.rows[i].size
-    //             }
-    //           }
-    //         }
-    //       })
-    //     }
-    //     let productResult = {
-    //       product_id: results.rows[0].productid,
-    //       results: stylesResults
-    //     }
-    //     res.status(200).send(productResult);
-    //   }
-    // })
   }
 }
 
