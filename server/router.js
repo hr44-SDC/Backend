@@ -9,5 +9,9 @@ router
   .route('/products/:id')
     .get(productControllers.getOneProduct)
 
+router
+  .route('/products/:id/styles')
+    .get(productControllers.getProductStyles)
+
 
 module.exports = router;

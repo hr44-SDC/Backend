@@ -37,9 +37,9 @@ CREATE TABLE IF NOT  EXISTS styleAndPrice (
 
 CREATE TABLE IF NOT EXISTS images (
   id SERIAL PRIMARY KEY,
-  styleId INT UNIQUE NOT NULL,
-  mainUrl VARCHAR (200),
-  thumbnailUrl VARCHAR (200),
+  styleId INT NOT NULL,
+  mainUrl VARCHAR (500),
+  thumbnailUrl VARCHAR (500),
   FOREIGN KEY (styleId)
     REFERENCES styleAndPrice (styleId)
 );

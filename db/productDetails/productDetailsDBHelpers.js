@@ -15,9 +15,33 @@ const productDetailsDBHelpers = {
 
   getOneProduct: (req, callback) => {
     let {id} = req.params;
-    console.log(id)
 
     let queryStr = `SELECT * FROM products, features WHERE products.productId = ${id} AND features.productId = ${id}`;
+
+    connection.query(queryStr, (err, results) => {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null, results);
+      }
+    })
+  },
+
+  getProductStyles: (req, callback) => {
+    let {id} = req.params;
+    let queryStr = `SELECT * FROM products, styleAndPrice WHERE products.productId = ${id} AND styleAndPrice.productId = ${id}`;
+
+    connection.query(queryStr, (err, results) => {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null, results);
+      }
+    })
+  },
+
+  getProductSizes: (styleId, callback) => {
+    let queryStr = `SELECT * FROM sizeAndQuantity WHERE styleId = ${styleId}`;
 
     connection.query(queryStr, (err, results) => {
       if (err) {
