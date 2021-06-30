@@ -27,17 +27,21 @@ const productDetailsDBHelpers = {
     })
   },
 
-  getProductStyles: (req, callback) => {
-    let {id} = req.params;
-    let queryStr = `SELECT * FROM products, styleAndPrice WHERE products.productId = ${id} AND styleAndPrice.productId = ${id}`;
+  getProductStyles: async (req, callback) => {
+    try {
+      let {id} = req.params;
+      let queryStr = `SELECT * FROM products, styleAndPrice WHERE products.productId = ${id} AND styleAndPrice.productId = ${id}`;
 
-    connection.query(queryStr, (err, results) => {
-      if (err) {
-        callback(err);
-      } else {
-        callback(null, results);
-      }
-    })
+      connection.query(queryStr, (err, results) => {
+        if (err) {
+          callback(err);
+        } else {
+          callback(null, results);
+        }
+      })
+    } catch (err) {
+      console.log(err);
+    }
   },
 
   getProductSizes: (styleId, callback) => {

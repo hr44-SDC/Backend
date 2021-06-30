@@ -1,17 +1,18 @@
 const router = require('express').Router();
-const productControllers = require('./productControllers.js');
+const productQueries = require('./productQueries.js');
 
 router
   .route('/products')
-    .get(productControllers.getAll)
+    .get(productQueries.getAll)
 
 router
   .route('/products/:id')
-    .get(productControllers.getOneProduct)
+    .get(productQueries.getOneProduct)
 
 router
   .route('/products/:id/styles')
-    .get(productControllers.getProductStyles)
+    .get(productQueries.getProductStyles)
+
 
 
 module.exports = router;
