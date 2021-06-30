@@ -60,4 +60,10 @@ CREATE TABLE IF NOT EXISTS cart (
   active INT,
   FOREIGN KEY (productId)
     REFERENCES products (productId)
-)
+);
+
+CREATE INDEX product_id_product_index on products (productId);
+CREATE INDEX product_id_features_index on features (productId);
+CREATE INDEX product_id_styleAndPrice_index on styleAndPrice (productId);
+CREATE INDEX style_id_sizeAndQuantity_index on sizeAndQuantity (styleId);
+CREATE INDEX style_id_images_index on images (styleId);
