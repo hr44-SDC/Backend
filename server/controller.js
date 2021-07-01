@@ -115,6 +115,7 @@ let controller = {
         }
         characteristicsFormatted = [characteristicsFormatted];
         console.log(characteristicsFormatted);
+        // performed a bulk insert: https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
         var queryString = 'INSERT INTO characteristics_reviews (characteristic_id, review_id, value) VALUES ?'
         db.query(queryString, characteristicsFormatted, (err, response) => {
           if (err) {
@@ -124,6 +125,18 @@ let controller = {
             res.status(200).send(response);
           }
         })
+      }
+    })
+  },
+  updateHelpfulness: (req, res) => {
+    var queryString = `UPDATE reviews SET helpfulness = helpfulness + 1 WHERE reviews.id = ${req.params.id}`
+    db.query(queryString, (err, response) => {
+      if (err) {
+        console.log(err);
+        res.status(404).send('err');
+      } else {
+        console.log(response);
+        res.status(200).send(response);
       }
     })
   }
@@ -136,11 +149,6 @@ NOTE: there is a problem with the frontend post request:
 even if you type in all of the characteristics, the only characteristics that get sent to the server are the ones that already exist in the database.
 This is a problem: there is no way to create a new characteristic id and actually have it work with the front end (because you are not actually recieving the data).
 
-
-
-
-
-/*
 
 EXAMPLE OF JSON OBJECT TO USE IN POSTMAN:
 
@@ -163,36 +171,4 @@ EXAMPLE OF JSON OBJECT TO USE IN POSTMAN:
         "4": 4
     }
 }
-
-
-GUIDE ON INSERT STATEMENTS
-How to get an output from a mysql insert?
-Asked 6 years, 5 months ago
-Active 6 years, 5 months ago
-Viewed 359 times
-
-0
-
-
-Our API can concurrently get hundreds of hits at a single endpoint at any given time and each call inserts something into the database.
-
-I need to get the last inserted ID - without using last_inserted_id()
-
-Unfortunately, if we have a lot of traffic all at once, this can sometimes get a bit screwy and give the ID of something being inserted by another hit to the API.
-
-Is there a way to add some kind of output clause that'll return the ID of what was just inserted in the same query as the insert?
-
-mysql
-Share
-Improve this question
-Follow
-asked Jan 15 '15 at 19:08
-
-Chris R.
-68966 silver badges2323 bronze badges
-1
-Why can't you use last_insert_id? Do tell ... – The Blue Dog Jan 15 '15 at 19:11
-With so much traffic coming through at once (doesn't happen all that often) we'll have multiple things being inserted at the same time. That ends up causing last_insert_id to not always match up if things get inserted at the same time through different processes. – Chris R. Jan 15 '15 at 19:32
-1
-Rubbish. last_insert_id is per client, it will always match that client's last insert operation. From the documentation, "The value of mysql_insert_id() is affected only by statements issued within the current client connection. It is not affected by statements issued by other clients." – The Blue Dog Jan 15 '15 at 19:38
 */

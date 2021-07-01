@@ -11,5 +11,8 @@ Router
 Router
   .route('/newReview')
     .post(controller.postReview)
+Router
+  .route('/review/helpfulness/:id')
+    .put(controller.updateHelpfulness)
 
 module.exports = Router;
