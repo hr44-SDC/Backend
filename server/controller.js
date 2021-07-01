@@ -113,9 +113,10 @@ let controller = {
         for (var key in req.body.characteristics) {
           characteristicsFormatted.push([Number(key), results.insertId, Number(req.body.characteristics[key])])
         }
-
-        var queryString = `INSERT INTO characteristic_reviews VALUES (${characteristicsFormatted})`
-        db.query(queryString, (err, response) => {
+        characteristicsFormatted = [characteristicsFormatted];
+        console.log(characteristicsFormatted);
+        var queryString = 'INSERT INTO characteristics_reviews (characteristic_id, review_id, value) VALUES ?'
+        db.query(queryString, characteristicsFormatted, (err, response) => {
           if (err) {
             console.log(err);
             res.status(404).send(err);
