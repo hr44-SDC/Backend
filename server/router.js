@@ -13,6 +13,8 @@ router
   .route('/products/:id/styles')
     .get(productQueries.getProductStyles)
 
-
+router
+  .route('/products/:id/:userSession')
+    .post(productQueries.addToCart)
 
 module.exports = router;

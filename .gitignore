@@ -4,3 +4,6 @@ node_modules/
 
 #csv files
 *.csv
+
+#connection
+db/productDetails/connection.js

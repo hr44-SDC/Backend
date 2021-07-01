@@ -1,0 +1,5 @@
+config:
+  target: "https://localhost:3000/api/products"
+    phases:
+     - duration: 300
+    arrivalRate: 50

@@ -124,6 +124,20 @@ const productQueries = {
     } catch (err) {
       console.log(err)
     }
+  },
+
+  addToCart: function (req, res) {
+    let {id} = req.params;
+    let {userSession} = req.params;
+
+    let queryStr = `INSERT INTO CART (userSession, productId, active) VALUES (${userSession}, ${id}, 1)`;
+    connection.query(queryStr, (err, results) => {
+      if (err) {
+        res.status(404).send(err)
+      } else {
+        res.status(200).send(`Added to cart!`);
+      }
+    })
   }
 }
 
