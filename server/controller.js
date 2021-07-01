@@ -103,21 +103,38 @@ let controller = {
     var queryString = `INSERT INTO reviews
     (product_id, rating, date, summary, body, recommended, reported, reviewer_name, reviewer_email, response, helpfulness)
     VALUES (${req.body.product_id}, "${req.body.rating}", ${date}, "${req.body.summary}", "${req.body.body}", "${req.body.recommend}", "false",
-    "${req.body.name}", "${req.body.email}", "null", 0); SELECT LAST_INSERT_ID();`
-    console.log('queryString: ', queryString);
+    "${req.body.name}", "${req.body.email}", "null", 0);`
     db.query(queryString, (err, results) => {
       if (err) {
         console.log(err);
         res.status(404).send(err);
       } else {
-        console.log(results);
-        res.status(200).send(results)
+        var characteristicsFormatted = [];
+        for (var key in req.body.characteristics) {
+          characteristicsFormatted.push([Number(key), results.insertId, Number(req.body.characteristics[key])])
+        }
+
+        var queryString = `INSERT INTO characteristic_reviews VALUES (${characteristicsFormatted})`
+        db.query(queryString, (err, response) => {
+          if (err) {
+            console.log(err);
+            res.status(404).send(err);
+          } else {
+            res.status(200).send(response);
+          }
+        })
       }
     })
   }
 }
 
 module.exports = controller;
+
+/*
+NOTE: there is a problem with the frontend post request:
+even if you type in all of the characteristics, the only characteristics that get sent to the server are the ones that already exist in the database.
+This is a problem: there is no way to create a new characteristic id and actually have it work with the front end (because you are not actually recieving the data).
+
 
 
 
