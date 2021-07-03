@@ -21,34 +21,42 @@ const productQueries = {
       if (err) {
         res.status(404).send(err);
       } else {
+        let productResult;
         let features = [];
-        for (let i = 0; i < results.rows.length; i++) {
-          let newFeature = results.rows[i].feature;
-          let newFeatureValue;
-          let feature;
-          if (results.rows[i].featurevalue === 'null') {
-            feature = {
-              feature: newFeature,
-              value: null
-            };
-          } else {
-            newFeatureValue = results.rows[i].featurevalue;
-            feature = {
-              feature: newFeature,
-              value: newFeatureValue
-            };
+        if (results.rows.length < 1) {
+          productResult = {
+            productId: id,
+            results: []
           }
-          features.push(feature);
+        } else {
+          for (let i = 0; i < results.rows.length; i++) {
+            let newFeature = results.rows[i].feature;
+            let newFeatureValue;
+            let feature;
+            if (results.rows[i].featurevalue === 'null') {
+              feature = {
+                feature: newFeature,
+                value: null
+              };
+            } else {
+              newFeatureValue = results.rows[i].featurevalue;
+              feature = {
+                feature: newFeature,
+                value: newFeatureValue
+              };
+            }
+            features.push(feature);
+          }
+          productResult = {
+            id: results.rows[0].productid,
+            name: results.rows[0].name,
+            slogan: results.rows[0].slogan,
+            description: results.rows[0].description,
+            category: results.rows[0].category,
+            features: features
+          };
         }
 
-        let productResult = {
-          id: results.rows[0].productid,
-          name: results.rows[0].name,
-          slogan: results.rows[0].slogan,
-          description: results.rows[0].description,
-          category: results.rows[0].category,
-          features: features
-        };
         res.status(200).send(productResult);
       }
     })
