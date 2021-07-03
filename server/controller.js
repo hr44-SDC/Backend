@@ -1,4 +1,4 @@
-const db = require('../db/connection.js');
+const db = require('../db/connection_two.js');
 const moment = require('moment')
 
 let controller = {

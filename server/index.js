@@ -14,5 +14,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', router)
 
+app.use('/loaderio-d0f0ee1d32e118fca8db6a99900c711d/', (req, res) => {
+    res.status(200).send('loaderio-d0f0ee1d32e118fca8db6a99900c711d')
+})
+
+app.use('/loaderio-d0f0ee1d32e118fca8db6a99900c711d.txt', (req, res) => {
+  res.status(200).send('loaderio-d0f0ee1d32e118fca8db6a99900c711d')
+})
+
+
 
 app.listen(port, () => console.log(`listening on ${port}`))
