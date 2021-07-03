@@ -4,7 +4,7 @@ const path = require('path');
 const router = require('./router');
 
 const app = express();
-const port = 3002;
+const port = 3003;
 
 app.use(morgan('dev'));
 app.use(express.json());

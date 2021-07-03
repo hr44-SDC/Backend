@@ -1,4 +1,4 @@
-const db = require('../db/connection_two.js');
+const db = require('../db/connection_local.js');
 const moment = require('moment')
 
 let controller = {
@@ -6,10 +6,8 @@ let controller = {
     var queryString = `SELECT reviews.*, GROUP_CONCAT(reviews_photos.photo_url) AS photos FROM reviews LEFT JOIN reviews_photos ON reviews.id = reviews_photos.review_id WHERE reviews.product_id = ${req.params.id} GROUP BY reviews.id`
     db.query(queryString, (err, results) => {
       if (err) {
-        console.log(err);
         res.status(400).send(err);
       } else {
-        console.log(results);
         for (var i = 0; i < results.length; i++) {
           if (results[i]['recommended'] === 'true') {
             results[i]['recommended'] = true;
@@ -34,7 +32,7 @@ let controller = {
           }
         }
         var resultsFormatted = {product: req.params.id, count: results.length, results: results}
-        res.status(200).send(resultsFormatted);
+        res.status(200).send(results);
       }
     })
   },
@@ -42,22 +40,18 @@ let controller = {
     var queryString = `SELECT reviews.*, GROUP_CONCAT(characteristics_reviews.value) AS characteristic_values,  GROUP_CONCAT(characteristics_reviews.characteristic_id) AS characteristic_id FROM reviews LEFT JOIN characteristics_reviews ON reviews.id = characteristics_reviews.review_id WHERE reviews.product_id = ${req.params.id} GROUP BY reviews.id`
     db.query(queryString, (err, results) => {
       if (err) {
-        console.log(err);
         res.status(404).send(err);
       } else {
         var queryString = `SELECT characteristics.name, characteristics.id FROM characteristics WHERE characteristics.product_id = ${req.params.id}`
         db.query(queryString, (errTwo, resultsTwo) => {
           if (err) {
-            console.log(err);
             res.status(404).send(err);
           } else {
-            console.log('resultsTwo :', resultsTwo);
             var resultsFormatted = {product_id: req.params.id, ratings: {}, recommended: {}, characteristics: {}}
             var characteristicsJoined = {}
             for (var i = 0; i < results.length; i++) {
               let recommended = results[i].recommended;
               let rating = results[i].rating;
-              console.log(results[i]);
               let characteristicIds = results[i].characteristic_id.split(',')
               let characteristicValues = results[i].characteristic_values.split(',')
 
@@ -81,8 +75,6 @@ let controller = {
                 }
               }
             }
-            console.log(results);
-            console.log(characteristicsJoined);
 
             for (var i = 0; i < resultsTwo.length; i++) {
               var characteristicName = resultsTwo[i].name;
@@ -99,14 +91,12 @@ let controller = {
   },
   postReview: (req, res) => {
     var date = Date.now();
-    console.log('DATE: ', date);
     var queryString = `INSERT INTO reviews
     (product_id, rating, date, summary, body, recommended, reported, reviewer_name, reviewer_email, response, helpfulness)
     VALUES (${req.body.product_id}, "${req.body.rating}", ${date}, "${req.body.summary}", "${req.body.body}", "${req.body.recommend}", "false",
     "${req.body.name}", "${req.body.email}", "null", 0);`
     db.query(queryString, (err, results) => {
       if (err) {
-        console.log(err);
         res.status(404).send(err);
       } else {
         var characteristicsFormatted = [];
@@ -114,12 +104,10 @@ let controller = {
           characteristicsFormatted.push([Number(key), results.insertId, Number(req.body.characteristics[key])])
         }
         characteristicsFormatted = [characteristicsFormatted];
-        console.log(characteristicsFormatted);
         // performed a bulk insert: https://stackoverflow.com/questions/8899802/how-do-i-do-a-bulk-insert-in-mysql-using-node-js
         var queryString = 'INSERT INTO characteristics_reviews (characteristic_id, review_id, value) VALUES ?'
         db.query(queryString, characteristicsFormatted, (err, response) => {
           if (err) {
-            console.log(err);
             res.status(404).send(err);
           } else {
             res.status(200).send(response);
@@ -132,10 +120,8 @@ let controller = {
     var queryString = `UPDATE reviews SET helpfulness = helpfulness + 1 WHERE reviews.id = ${req.params.id}`
     db.query(queryString, (err, response) => {
       if (err) {
-        console.log(err);
         res.status(404).send('err');
       } else {
-        console.log(response);
         res.status(200).send(response);
       }
     })

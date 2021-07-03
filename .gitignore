@@ -4,3 +4,4 @@ node_modules/
 
 pwd.js
 *.csv
+*.pem

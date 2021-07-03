@@ -19,12 +19,13 @@ CREATE TABLE reviews (
   PRIMARY KEY (id)
 );
 
-
 CREATE TABLE reviews_photos (
   id INT NOT NULL AUTO_INCREMENT,
   review_id INT NOT NULL,
   photo_url TEXT NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (review_id)
+      REFERENCES reviews(id)
 );
 
 CREATE TABLE characteristics (
@@ -39,18 +40,23 @@ CREATE TABLE characteristics_reviews (
   characteristic_id INT NOT NULL,
   review_id INT NOT NULL,
   value INT NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (review_id)
+      REFERENCES reviews(id),
+  FOREIGN KEY (characteristic_id)
+      REFERENCES characteristics(id)
 );
 
-LOAD DATA LOCAL INFILE '/Users/scott/Desktop/Hack Reactor/Backend/db/reviews_photos.csv' INTO TABLE ratings_and_reviews.reviews_photos FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, review_id, photo_url);
 LOAD DATA LOCAL INFILE '/Users/scott/Desktop/Hack Reactor/Backend/db/reviews.csv' INTO TABLE ratings_and_reviews.reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, product_id, rating, date, summary, body, recommended, reported, reviewer_name, reviewer_email, response, helpfulness);
-LOAD DATA LOCAL INFILE '/Users/scott/Desktop/Hack Reactor/Backend/db/characteristic_reviews.csv' INTO TABLE ratings_and_reviews.characteristics_reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, characteristic_id, review_id, value);
+LOAD DATA LOCAL INFILE '/Users/scott/Desktop/Hack Reactor/Backend/db/reviews_photos.csv' INTO TABLE ratings_and_reviews.reviews_photos FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, review_id, photo_url);
 LOAD DATA LOCAL INFILE '/Users/scott/Desktop/Hack Reactor/Backend/db/characteristics.csv' INTO TABLE ratings_and_reviews.characteristics FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, product_id, name);
+LOAD DATA LOCAL INFILE '/Users/scott/Desktop/Hack Reactor/Backend/db/characteristic_reviews.csv' INTO TABLE ratings_and_reviews.characteristics_reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, characteristic_id, review_id, value);
 
 CREATE INDEX reviews_product_id on reviews(product_id);
 CREATE INDEX reviews_photos_review_id on reviews_photos(review_id);
 CREATE INDEX characteristics_reviews_review_id on characteristics_reviews(review_id);
 CREATE INDEX characteristics_product_id on characteristics(product_id);
+CREATE INDEX characteristics_id on characteristics_reviews(characteristic_id);
 
 
 
