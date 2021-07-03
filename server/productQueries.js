@@ -8,6 +8,16 @@ const productQueries = {
       if (err) {
         res.status(404).send(err)
       } else {
+        let products = [];
+        for (let i = 0; i < results.rows.length; i++) {
+          let individualProduct = {
+            id: results.rows[i].productid,
+            name: results.rows[i].name,
+            slogan: results.rows[i].slogan,
+            description: results.rows[i].description,
+            category: results.rows[i].category,
+          }
+        }
         res.status(200).send(results);
       }
     })
@@ -108,7 +118,6 @@ const productQueries = {
 
           let photoQueryStr = `SELECT * FROM images WHERE styleID = ${styleId}`;
           let photoRes = await connection.query(photoQueryStr);
-          console.log(photoRes);
           for (let k = 0; k < photoRes.rows.length; k++) {
             let photoObject = {
               thumbnail_url: photoRes.rows[k].thumbnailurl,
