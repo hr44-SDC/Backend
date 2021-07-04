@@ -24,7 +24,9 @@ CREATE TABLE reviews_photos (
   id INT NOT NULL AUTO_INCREMENT,
   review_id INT NOT NULL,
   photo_url TEXT NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (review_id)
+      REFERENCES reviews(id)
 );
 
 CREATE TABLE characteristics (
@@ -39,45 +41,19 @@ CREATE TABLE characteristics_reviews (
   characteristic_id INT NOT NULL,
   review_id INT NOT NULL,
   value INT NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (review_id)
+      REFERENCES reviews(id),
+  FOREIGN KEY (characteristic_id)
+      REFERENCES characteristics(id)
 );
-
-LOAD DATA LOCAL INFILE '/home/ubuntu/Backend/db/reviews_photos.csv' INTO TABLE ratings_and_reviews.reviews_photos FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, review_id, photo_url);
 LOAD DATA LOCAL INFILE '/home/ubuntu/Backend/db/reviews.csv' INTO TABLE ratings_and_reviews.reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, product_id, rating, date, summary, body, recommended, reported, reviewer_name, reviewer_email, response, helpfulness);
-LOAD DATA LOCAL INFILE '/home/ubuntu/Backend/db/characteristic_reviews.csv' INTO TABLE ratings_and_reviews.characteristics_reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, characteristic_id, review_id, value);
+LOAD DATA LOCAL INFILE '/home/ubuntu/Backend/db/reviews_photos.csv' INTO TABLE ratings_and_reviews.reviews_photos FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, review_id, photo_url);
 LOAD DATA LOCAL INFILE '/home/ubuntu/Backend/db/characteristics.csv' INTO TABLE ratings_and_reviews.characteristics FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, product_id, name);
+LOAD DATA LOCAL INFILE '/home/ubuntu/Backend/db/characteristic_reviews.csv' INTO TABLE ratings_and_reviews.characteristics_reviews FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (id, characteristic_id, review_id, value);
 
 CREATE INDEX reviews_product_id on reviews(product_id);
 CREATE INDEX reviews_photos_review_id on reviews_photos(review_id);
 CREATE INDEX characteristics_reviews_review_id on characteristics_reviews(review_id);
 CREATE INDEX characteristics_product_id on characteristics(product_id);
-
-
-
---  FOREIGN KEY (product_id)
---     REFERENCES products(id)
---     ON DELETE CASCADE
-
-  -- FOREIGN KEY (review_id)
-  --   REFERENCES reviews(id)
-  --   ON DELETE CASCADE
-
--- LOAD DATA LOCAL INFILE '/home/scott/Hack_Reactor/backend_new/Backend/db/reviews_photos.csv' INTO TABLE ratings_and_reviews.reviews_photos
--- FIELDS TERMINATED BY ','
--- ENCLOSED BY '"'
--- LINES TERMINATED BY '\n';
-
--- LOAD DATA LOCAL INFILE '/home/scott/Hack_Reactor/backend_new/Backend/db/reviews_photos.csv' INTO TABLE ratings_and_reviews.reviews_photos FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (id, review_id, photo_url);
--- mysql --local-infile=1 -u root -p < schema.sql
-
-
--- CREATE TABLE ratings (
-
-
--- )
-
--- CREATE TABLE ratings_characteristics (
-
--- )
-
--- run command: mysql --local-infile=1 -u root -p < seed.sql
+CREATE INDEX characteristics_id on characteristics_reviews(characteristic_id);
