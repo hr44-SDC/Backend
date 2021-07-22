@@ -106,12 +106,10 @@ var controllers1 = {
   },
   updateHelpfulness: (req, response) => {
     var helpfulness = req.body.questionHelpfulness || req.body.answerHelpfulness;
-    console.log(helpfulness)
     var id = req.params.id_to_update
     var category = req.params.category
     var shortenedCategory = category.slice(0, category.length - 1)
     var queryStr = `UPDATE ${category} SET ${shortenedCategory}_helpfulness = ${helpfulness} WHERE ${shortenedCategory}_id = ${id};`;
-    console.log(queryStr)
     client.query(queryStr, (err, res) => {
       if (err) {
         response.status(400).send(err)
@@ -121,14 +119,11 @@ var controllers1 = {
     })
   },
   report: (req, response) => {
-    console.log(req.body.reported)
-    console.log(typeof req.body.reported)
     var reported = (req.body.reported) ? 1 : 0;
     var id = req.params.id_to_report
     var category = req.params.category
     var shortenedCategory = category.slice(0, category.length - 1)
     var queryStr = `UPDATE ${category} SET ${shortenedCategory}_reported = ${reported} WHERE ${shortenedCategory}_id = ${id};`;
-    console.log(queryStr)
     client.query(queryStr, (err, res) => {
       if (err) {
         response.status(400).send(err)

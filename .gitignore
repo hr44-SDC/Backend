@@ -9,3 +9,8 @@ answers_photos.csv
 answers.csv
 questions.csv
 *csv
+
+#key pair
+SDC.pem
+
+package-lock.json
